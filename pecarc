@@ -1,0 +1,61 @@
+
+PECA_ROOT=~/peca
+PECAST_ROOT="${PECA_ROOT}/PeerCastStation"
+PECA_TMP="${PECA_ROOT}/tmp"
+
+BBIFF_NOTIFY_SEND="my_notify"
+
+my_notify(){
+  notify-send $1
+  peca_jtalk $1
+}
+
+my_bbiff(){
+  if [ $# -ne 1 ]; then
+    echo "\tusage: my_bbiff 567"
+  else
+    local thread="http://jbbs.shitaraba.net/bbs/read.cgi/game/57358"
+    local id="1389905050"
+    local start=$1
+    bbiff "${thread}/${id}" ${start}
+  fi
+}
+
+my_peca_git_configure()
+{
+  git config --local user.name DoG-peer
+  git config --local user.email dogeometry50@gmail.com
+}
+
+peca_jtalk()
+{
+  if [ $# -ne 1 ]; then
+    echo "\tusage: peca_jtalk \"hello peercast\""
+  else
+    local TMP="${PECA_TMP}/open-talk.wav"
+    local VOICE=/usr/share/hts-voice/nitech-jp-atr503-m001/nitech_jp_atr503_m001.htsvoice
+    locl DICT=/var/lib/mecab/dic/open-jtalk/naist-jdic
+    touch $TMP
+    echo "$1" | open_jtalk \
+      -x $DICT \
+      -m $VOICE \
+      -ow $TMP
+    aplay --quiet $TMP
+    rm $TMP
+  fi
+}
+
+peca_update()
+{
+  if [ $# -ne 1 ]; then
+    echo "\tusage: peca_update x.x.x"
+  else
+    local PECAST_VERSION=$1
+    local PECAST_NAME="PeerCastStation-${PECAST_VERSION}"
+    local PECAST_ZIP="${PECA_TMP}/${PECAST_NAME}.zip"
+    wget "http://www.pecastation.org/files/${PECAST_NAME}.zip" -O ${PECAST_ZIP}
+    rm -rf ${PECAST_ROOT}
+    unzip PECAST_ZIP -d ${PECAST_ROOT}
+    rm PECAST_ZIP
+  fi
+}
