@@ -3,13 +3,12 @@ PECA_ROOT=~/peca
 PECAST_ROOT="${PECA_ROOT}/PeerCastStation"
 PECA_TMP="${PECA_ROOT}/tmp"
 
-BBIFF_NOTIFY_SEND="my_notify"
-
 my_notify(){
-  notify-send $1
+  echo $1
   peca_jtalk $1
+  notify-send $1
 }
-
+#export BBIFF_NOTIFY_SEND="~/peca/notify.rb"
 my_bbiff(){
   if [ $# -ne 1 ]; then
     echo "\tusage: my_bbiff 567"
@@ -53,9 +52,15 @@ peca_update()
     local PECAST_VERSION=$1
     local PECAST_NAME="PeerCastStation-${PECAST_VERSION}"
     local PECAST_ZIP="${PECA_TMP}/${PECAST_NAME}.zip"
-    wget "http://www.pecastation.org/files/${PECAST_NAME}.zip" -O ${PECAST_ZIP}
-    rm -rf ${PECAST_ROOT}
-    unzip PECAST_ZIP -d ${PECAST_ROOT}
-    rm PECAST_ZIP
+    wget "http://www.pecastation.org/files/${PECAST_NAME}.zip" -O "${PECAST_ZIP}"
+    rm -rf "${PECAST_ROOT}"
+    unzip "${PECAST_ZIP}" -d "${PECA_ROOT}"
+    mv "${PECA_ROOT}/${PECAST_NAME}" "${PECA_ROOT}/PeerCastStation"
+    rm "${PECAST_ZIP}"
   fi
 }
+
+drawcast(){
+  java -jar ~/peca/drawcast/DrawcastServer.jar
+}
+
